@@ -1,0 +1,109 @@
+/* 
+    Created on : 23.2.2017, 0:40:53
+    Author     : Ensio
+*/
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+/* headers */
+.sidenav h1 {
+    padding: 8px 6px 2px 24px;
+    text-decoration: none;
+    font-size: 25px;
+    font-weight: 700;
+    display: block;
+    transition: 0.3s;
+    margin-top: -24px;
+    margin-bottom: 2px;  
+}
+
+.sidenav h2 {
+    padding: 8px 6px 2px 24px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+    transition: 0.3s;
+    margin-top: -12px;
+    margin-bottom: -4px;
+    margin-left: -10px;
+}
+
+/* form-areas */
+#addChatroom, #addToPrivate {
+    margin-left: 1.5em;
+    width: 70%;
+}
+
+.sidenav input {
+    float: left;
+}
+
+#search-input {
+    width: 52%;
+    margin-left: 18px;
+}
+
+/*Set list style*/
+.sidenav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* The navigation menu links*/
+#links-div {
+    margin-top: 5px;
+    overflow-y: auto;
+    height: 192px;
+    margin-bottom: 5px;
+
+}
+
+.sidenav a {
+    padding: 4px 4px 6px 32px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+    margin-bottom: -12px;  
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+/* Change side navigation bar's buttons and inputs size smaller*/
+.sidenav button, .sidenav input {
+    height: 30px;
+    line-height: 15px;
+}
+
+ /* Don't want to radio inputs float: left*/
+input[type="radio"] {
+    float: none;
+    height: 10px;
+}
+
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}

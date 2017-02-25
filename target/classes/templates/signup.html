@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Chat</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" type="text/css" href="/css/chat-style.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <!-- jQuery library for Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript for Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+
+        <div id="signup-page"> 
+            <form id="signup-form" action="#" th:action="@{/chat/signup}" th:object="${account}" method="POST">
+                <div class="form-group" id="signup-nickname">
+                    <label for="nickname">Nickname:</label>
+                    <input type="text" class="form-control" id="nickname" th:field="*{nickname}"/>
+                    <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-message">Nickname error message</span>
+                    <span th:if="${notUniqueNameError != null}" th:text="${notUniqueNameError}" class="error-message" /> <!--<br/>-->
+                    <span id="nickname-error" class="error-message"></span>
+                </div>
+                <div class="form-group" id="signup-pwd">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd" name="password" th:field="*{password}"/>
+                    <span id="password-error" class="error-message"></span>
+                </div>
+                <div class="form-group" id="signup-pwd-confirm">
+                    <label for="pwd-confirm">Confirm password:</label>
+                    <input type="password" class="form-control" id="pwd-confirm" name="confirm"/>
+                    <span id="confirm-error" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <input type="button" onclick="confirmInputs()" class="btn1" value="Sing up" />
+                </div>
+            </form>
+        </div>
+
+        <script th:src="@{/javascript/signup.js}"/>
+    </body>
+</html>

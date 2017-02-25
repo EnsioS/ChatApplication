@@ -1,0 +1,59 @@
+/* 
+    Created on : 11.1.2017, 13:49:50
+    Author     : Ensio
+*/
+
+/* general style settings */
+.error-message {
+    color: red;
+}
+
+.btn1 {
+    background-color: rgb(30, 85, 100);
+    color: white;
+    padding: 0.4em;
+    border-radius: 5px;
+}
+
+.btn1:hover {
+    color: rgb(30, 85, 100);
+    background-color: lightgrey;
+}
+
+#signup-page, #login-page , .container {
+    padding-top: 5%;
+    padding-left: 20%;
+    width: 60%;
+}
+
+/* Message-area style settings */
+#messages {
+    margin-top: -15px;
+    overflow-y: auto;
+    height: 230px;
+}
+
+.container #messages div {
+    background-color: lightgrey; 
+    color: black;
+    padding: 0.3em;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    line-height: 15px; 
+}
+
+.message-nickname {
+    color: rgb(30, 85, 100);
+    font-weight: bold;
+}
+
+.message-time {
+    color: rgb(120, 120, 120);
+    font-size: 13px;
+    float: right;
+}
+
+.message-content {
+    width: 700px;
+    word-break: break-all;
+}
