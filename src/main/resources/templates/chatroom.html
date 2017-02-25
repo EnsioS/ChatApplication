@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title>Chat</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" type="text/css" href="/css/chat-style.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/top-nav.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/side-nav.css"/>
+        <!-- Latest compiled and minified CSS for Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <!-- jQuery library for Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript for Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <!--top navigationbar-->
+        <ul class="topnav" id="myTopnav">
+            <li><a class="left not-real-link" >Chatroom: </a></li>
+            <li><a class="left real-link" href="#" onclick="openNav()">
+                    <span id="current" th:text="${currentChatroom}"/><span class="caret"/>
+                </a>
+            </li>            
+            <li sec:authorize="isAnonymous()">
+                <a id="signup" class="right real-link" th:href="@{/chat/signup}"><span class="glyphicon glyphicon-user"></span> Sign Up</a>
+            </li>
+            <li sec:authorize="isAnonymous()">
+                <a id="login" class="right real-link" th:href="@{/chat/login}"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a id="logout" class="right real-link" onclick="document.getElementById('logout-form').submit();"><span class="glyphicon glyphicon-log-out"></span> Log out</a>
+            </li> 
+            <li style="visibility: hidden" ><form id ="logout-form" method="post" action="#" th:action="@{/chat/logout}"><input type="submit" value="Logout"/></form></li>
+            <li class="icon real-link">
+                <a href="javascript:void(0);" onclick="myFunction()">&#9776;</a>
+            </li>
+        </ul>
+
+        <!--side navigation bar-->
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <h1>Chatrooms</h1>
+            <ul>
+                <li><input type="text" id="search-input" class="form-control"/></li>
+                <li><button class="btn1" onclick="search()">search</button></li>                
+            </ul>
+
+            <div id="links-div">
+                <a  th:each="chatroom : ${chatrooms}" th:id="${chatroom.name}" th:href="@{'/chatroom/' + ${chatroom.name}}" th:text="${chatroom}"/>
+            </div>
+
+            <div class="form-group" id="addChatroom">
+                <h2>Create new</h2>
+                <form action="#" th:action="@{/chatroom}" th:object="${chatroom}" method="POST">
+                    <label for="name" > name: </label><br th:if="${#fields.hasErrors('name') || notUniqueNameError != null}"/>
+                    <input type="text" class="form-control" th:field="*{name}" />  <br sec:authorize="isAuthenticated()"/> 
+                    <input sec:authorize="isAuthenticated()" type="radio" name="freeAccess" value="true" checked="">free</input> 
+                    <input sec:authorize="isAuthenticated()" type="radio" name="freeAccess" value="false">private</input><br sec:authorize="isAuthenticated()"/>
+                    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message">Name error message</span>
+                    <span th:if="${notUniqueNameError != null}" th:text="${notUniqueNameError}" class="error-message" /> <!--<br/>-->
+                    
+                    <input hidden="" type="text" name="currentChatroom" value="default" th:value="${currentChatroom.name}" />
+
+                    <input type="submit" class="btn1" value="Add new chatroom" />
+                </form>
+            </div>
+
+            <div id="addToPrivate" class="form-group" th:if="${ownRooms != null}">
+                <form th:if="${!ownRooms.isEmpty()}" th:action="@{'/chatroom/private'}" method="POST">
+                    <h2>Add access</h2>
+                    <label for="where" > where: </label>
+                    <select class="form-control" id="where" name="where" >
+                        <option th:each="chatroom : ${ownRooms}" th:value="${chatroom.name}" th:text="${chatroom.name}"/>
+                    </select>
+                    <label for="who" > who: </label>
+                    <input type="text" class="form-control" id="who" name="who" />
+                    <input hidden="" type="text" name="currentChatroom" th:value="${currentChatroom.name}" />
+                    <input type="submit" class="btn1" value="Add access" />
+                </form>
+            </div>
+        </div>
+
+        <!--messages-->
+        <div class="container" >
+            <div id="messages">
+                <div th:each="message: ${messages}">
+                    <span th:class="message-nickname" th:text="${message.nickname}"></span>
+                    <span th:class="message-time" th:text="${#dates.format(message.timestamp, 'd.M.yyyy HH.mm')}" ></span><br/>
+                    <span th:class="message-content"  th:text="${message.content}"></span>
+                </div>
+            </div>
+
+            <div id="addMessage">
+                <label for="message">Type a message:</label>
+                <textarea name="message" class="form-control" rows="2" id="message"/> 
+                <span id="content-error" class="error-message"></span><br/>
+                <label sec:authorize="isAnonymous()" for="nickname">nickname:</label>
+                <input sec:authorize="isAnonymous()" type="text" class="form-control" id="nickname" /> 
+                <span id="nickname-error" class="error-message"></span><br sec:authorize="isAnonymous()" />
+                <input type="button" class="btn1" id="send" onclick="send()" value="Send"/>
+            </div>
+
+        </div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script th:src="@{/javascript/navigation-bar.js}" />
+        <script th:src="@{/javascript/message.js}" />
+        <script th:src="@{/javascript/chatroom_search.js}" />
+        <script th:inline="javascript">
+//                    var chatrooms = /*[[${chatrooms}]]*/ null;
+//
+//                    function search() {
+//                        searchFrom(chatrooms);
+//                    }
+
+                    var client = null;
+
+                    var nickname = /*[[${nickname}]]*/ null;
+                    var nicknames = /*[[${nicknames}]]*/ null;
+                    var chatroom = /*[[${currentChatroom}]]*/ null;
+
+                    // messages defined in websocket config
+                    client = Stomp.over(new SockJS('/register'));
+                    client.connect({}, function (frame) {
+                        //update visitorCounter, arriving chatroom
+                        client.send("/ws/visitor", {}, "join " + chatroom.name);
+
+                        var subscribeTo = '/chatroom/' + chatroom.name;
+                        client.subscribe(subscribeTo, function (response) {
+                            console.log("Received: " + response)
+                            displayMessage(JSON.parse(response.body));
+                            scrollDown();
+                        });
+
+                        //update visitorcounter
+                        client.subscribe('/chatroom', function (response) {
+                            console.log("Received: " + response)
+                            updateVisitorCounter(JSON.parse(response.body));
+                        });
+                    });
+
+                    function send() {
+                        console.log("Käyttäjä " + nickname + " saapuu metodiin send");
+
+                        if (document.getElementById('nickname').value != null) {
+                            nickname = document.getElementById('nickname').value;
+                        }
+
+                        var content = document.getElementById('message').value;
+
+                        if (validateMessage(nickname, nicknames, content)) {
+                            client.send("/ws/messages", {}, JSON.stringify({'nickname': nickname, 'chatroom': chatroom, 'content': content}));
+                            document.getElementById('message').value = "";
+                        }
+
+                    }
+
+                    function updateVisitorCounter(updated) {
+                        // uptade counter from top navigation bar 
+                        document.getElementById("current").innerHTML = updated.name + " (" + formatVisitorText(updated.visitors) + ") ";
+
+                        document.getElementById(updated.name).innerHTML = updated.name + " (" + formatVisitorText(updated.visitors) + ") ";
+                    }
+
+                    function formatVisitorText(visitors) {
+
+                        if (visitors == 0) {
+                            return "no visitors";
+                        } else if (visitors == 1) {
+                            return "1 visitor";
+                        }
+
+                        return visitors + " visitors";
+                    }
+
+                    window.onbeforeunload = function () {
+                        client.send("/ws/visitor", {}, "left " + chatroom.name);
+                        client.disconnect();
+                        try {
+                            client.close();
+                        } catch (e) {
+                        }
+                    };
+        </script>
+    </body>
+</html>
